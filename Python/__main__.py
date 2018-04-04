@@ -1,39 +1,27 @@
-# This code is used to retrieve data from Arduino Mega that is connected through serial port and the data
-# itself is being sent to Amazon Web Services (AWS) Internet of Things (IoT) service. As the data is 
-# sent in JSON format (using ArduinoJson) all we have to do, is make sure that it is in the correct format 
-# for the AWS IoT Python SDK. The data is being sent every minute and during waiting the port is closed.
+""" This code is used to retrieve data from Arduino Mega that is connected through serial port and the data
+ itself is being sent to Amazon Web Services (AWS) Internet of Things (IoT) service. As the data is 
+ sent in JSON format (using ArduinoJson) all we have to do is make sure that it is in the correct format 
+ for the AWS IoT Python SDK. The data is being sent every minute and during waiting the port is closed.
+ 
+ If you don't have an Arduino to sent data with, use test_AWS_connection.py to simply test your IoT service,
 
-# Note: Edit callbacks.py - dataNames variable if your data is in different format. It is used to define
-# the objects in your JSON document, that will be printed on console after each succesful update.
-# Note 2: For security reasons private keys and certificates have been deleted from the login folder and
-# API endpoint name is replaced with xxxxx
+ Note: Edit AWS_details.py to match your IoT service.
+
+ Note 2: Edit callbacks.py - dataNames variable if your data is in different format. It is used to define
+ the objects in your JSON document, that will be printed on console after each succesful update. """
 
 import time
 import serial
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTShadowClient
-from callbacks import customShadowCallback_Update, customShadowCallback_Delete
-
-# ******************************************** AWS details ******************************************** #
-# root and device certificate, alongside with device private key should be put into the login folder
-loginFolder = "login/"
-
-# Paths to the certificates, rename the certificates accordingly. 
-# Note: Make sure there is no spaces in the name
-rootCertificatePath = loginFolder + "rootCertificate.pem"
-privateKeyPath = loginFolder + "MyThermometer001.private.key"
-certificatePath = loginFolder + "MyThermometer001.cert.pem"
-
-appName = "testIoTPySDK" # Name of the app, can be anything.
-hostname = "xxxxx.iot.eu-west-2.amazonaws.com" # Your API endpoint.
-port = 8883 # 8883 when connecting with MQTT, 8443 for HTTP, 443 for WebSocket and HTTP.
-thingName = "MyThermometer001" # Name of your thing (i.e. device) on AWS
-topicToPublish = "$aws/things/" + thingName + "/shadow/update"
-# **************************************************************************************************** #
+from callbacks import customShadowCallback_Update, customShadowCallback_Delete # Import the required callbacks
+from AWS_details import LoginDetails as details # Separate place to store login details in.
 
 # Create an AWS IoT MQTT Client using TLSv1.2 Mutual Authentication
-myAWSIoTMQTTShadowClient = AWSIoTMQTTShadowClient(appName)
-myAWSIoTMQTTShadowClient.configureEndpoint(hostname, port)
-myAWSIoTMQTTShadowClient.configureCredentials(rootCertificatePath, privateKeyPath, certificatePath)
+myAWSIoTMQTTShadowClient = AWSIoTMQTTShadowClient(details["appName"])
+myAWSIoTMQTTShadowClient.configureEndpoint(details["hostname"], details["port"])
+myAWSIoTMQTTShadowClient.configureCredentials(details["rootCertificate"], 
+                                              details["privateKey"], 
+                                              details["certificate"])
 
 # AWS IoT MQTT Client connection configuration
 myAWSIoTMQTTShadowClient.configureAutoReconnectBackoffTime(1, 32, 20)
@@ -42,7 +30,7 @@ myAWSIoTMQTTShadowClient.configureMQTTOperationTimeout(5)  # 5 sec
 
 myAWSIoTMQTTShadowClient.connect() # Connect to AWS IoT
 
-deviceShadowHandler = myAWSIoTMQTTShadowClient.createShadowHandlerWithName(thingName, True)
+deviceShadowHandler = myAWSIoTMQTTShadowClient.createShadowHandlerWithName(details["thingName"], True)
 
 # Delete shadow JSON doc. 
 # Note: If there is no data to be deleted, it will be rejected (doesn't crash/stop the program)

@@ -31,3 +31,22 @@ def customShadowCallback_Delete(payload, responseStatus, token):
         print("~~~~~~~~~~~~~~~~~~~~~~~\n\n")
     if responseStatus == "rejected":
         print("Delete request " + token + " rejected!")
+        
+# for test_AWS_connection.py
+def AWS_ShadowCallback_Update(payload, responseStatus, token):
+    singleName = ["property"]
+    # payload is a JSON string ready to be parsed using json.loads(...)
+    if responseStatus == "timeout":
+        print("Update request " + token + " time out!")
+    if responseStatus == "accepted":
+        payloadDict = json.loads(payload)
+        print("~~~~~~~~~~~~~~~~~~~~~~~")
+        print("Update request with token: " + token + " accepted!")
+
+        # for dynamically printing sent JSON data.
+        for i in range(0,len(singleName)):
+            print(singleName[i] + ": " + str(payloadDict["state"]["desired"][singleName[i]]))
+        
+        print("~~~~~~~~~~~~~~~~~~~~~~~\n\n")
+    if responseStatus == "rejected":
+        print("Update request " + token + " rejected!")
