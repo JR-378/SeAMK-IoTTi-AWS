@@ -5,7 +5,7 @@ This project uses TAMK's Sensor Board, which consists of Arduino Mega 2560, Ardu
 
 ## Quick instructions
 
-1. Upload the Arduino-Mega-JSON-To-PC.ino to your board
+1. Upload the JSON-To-PC.ino to your board
 2. In Python folder, add your certificate and private key to login folder and modify the AWS details in AWS_details.py to match your AWS IoT service. Mainly the following details:
 ```Python
 rootCertificatePath = loginFolder + "rootCertificate.pem"
