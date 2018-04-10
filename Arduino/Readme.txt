@@ -1,7 +1,0 @@
-JSON-To-PC contains the code for Arduino Mega. Open it with Arduino IDE.
-
-libraries.zip contains the required libraries for the code. Unzip it with 7-Zip or Winrar and Copy and paste the folders inside into the Arduino libraries folder, usually located in C:\Users\YOUR-USERNAME\Documents\Arduino\libraries
-
-For information on installing libraries, see: http://www.arduino.cc/en/Guide/Libraries
-
-Driver.zip contains the driver for a Chinese copy of Arduino Mega, as the official Arduino USB drivers won't work with it.
